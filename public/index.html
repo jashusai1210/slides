@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070b14">
+  <title>SlideVault — My SQL Modules</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070b14;--surface:#0e1524;--surface-light:#131e31;--border:#23314a;--text:#eef4ff;--muted:#98a8c2;--cyan:#62e6ee;--blue:#7b8cff;--green:#66e3b4;--danger:#ff8296;--gold:#ffd580}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#14223b 0,transparent 42%),radial-gradient(ellipse at 95% 20%,#102b36 0,transparent 30%),var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+    .container{width:min(1120px,calc(100% - 32px));margin:auto;padding:34px 0 70px}.hero{text-align:center;padding:26px 0 32px}.brand{display:inline-flex;align-items:center;gap:9px;border:1px solid #2d4a63;background:#0c1b2b;padding:9px 14px;border-radius:99px;font-weight:800;letter-spacing:2px;font-size:12px;color:var(--cyan)}.brand-icon{font-size:17px}h1,h2,h3,p{margin-top:0}.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-2.5px;margin:25px 0 15px}.gradient{background:linear-gradient(100deg,var(--cyan),#8aa5ff 60%,#c6a4ff);-webkit-background-clip:text;background-clip:text;color:transparent}.subtitle{max-width:690px;margin:auto;color:var(--muted);line-height:1.8;font-size:15px}.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:25px}.stat{border:1px solid var(--border);background:#0b1422;border-radius:13px;padding:11px 16px;color:var(--muted);font-size:12px}.stat strong{color:var(--text);font-size:15px;margin-right:5px}
+    .section-heading{font-family:'Space Grotesk',sans-serif;font-size:23px;margin:0 0 8px;display:flex;gap:11px;align-items:center}.section-number{display:inline-grid;place-items:center;width:33px;height:33px;border-radius:10px;background:#15333c;color:var(--cyan);font-size:13px}.description{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:20px}.panel{background:linear-gradient(145deg,rgba(16,25,42,.96),rgba(10,17,29,.96));border:1px solid var(--border);border-radius:22px;padding:24px;margin-top:20px;box-shadow:0 20px 70px #0002}.module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.module-card{position:relative;overflow:hidden;border:1px solid #293a55;background:linear-gradient(145deg,#111d30,#0b1321);border-radius:18px;padding:21px;transition:transform .2s,border-color .2s}.module-card:hover{transform:translateY(-3px);border-color:#4e9da9}.module-card:before{content:'';position:absolute;right:-35px;top:-55px;width:150px;height:150px;border-radius:50%;background:#5ee7ee0c}.module-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.module-tag{font-size:10px;font-weight:800;letter-spacing:1.3px;color:var(--cyan);border:1px solid #2d5c68;background:#102b35;border-radius:99px;padding:6px 9px}.module-icon{font-size:28px}.module-card h3{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:18px 0 7px}.module-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:18px}.module-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--border);padding-top:14px;margin-bottom:17px;font-size:12px;color:var(--muted)}.module-meta strong{color:var(--text)}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid #34506b;border-radius:11px;padding:11px 14px;font:700 12px 'DM Sans',sans-serif;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.18s}.btn-primary{background:linear-gradient(110deg,#61e3e8,#8aa5ff);border:0;color:#07121d}.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn-secondary{background:#101c2d;color:var(--text)}.btn-secondary:hover{border-color:var(--cyan)}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}.progress-wrap{display:none;margin-top:18px;background:#09111e;border:1px solid var(--border);padding:15px;border-radius:13px}.progress-wrap.show{display:block}.progress-label{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);margin-bottom:10px}.progress-track{height:7px;border-radius:99px;background:#202c40;overflow:hidden}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .2s}.status{margin-top:12px;font-size:12px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}.message{display:none;margin-top:15px;padding:13px 15px;border-radius:12px;font-size:13px;line-height:1.65}.message.show{display:block}.message.error{color:#ffdce2;background:#351923;border:1px solid #713342}.message.success{color:#c8ffea;background:#102b27;border:1px solid #286452}.note{margin-top:20px;border:1px solid #4d442c;background:#211e16;color:#d9cda8;border-radius:13px;padding:14px 16px;font-size:12px;line-height:1.75}.note strong{color:var(--gold)}footer{text-align:center;color:#6f809a;font-size:11px;line-height:1.8;padding:25px 0 0}.mobile-builder-btn{display:none}
+    @media(max-width:700px){.container{width:min(100% - 22px,600px);padding-top:18px}.hero{padding-top:20px}.hero h1{letter-spacing:-1.4px}.panel{padding:17px;border-radius:17px}.module-grid{grid-template-columns:1fr}.module-card{padding:18px}.section-heading{font-size:20px}.actions .btn{flex:1}.mobile-builder-btn{display:block;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);z-index:5;white-space:nowrap;border:0;border-radius:99px;padding:13px 20px;background:linear-gradient(100deg,var(--cyan),#8aa5ff);color:#06121b;font-weight:800;box-shadow:0 8px 30px #0008}}
+  </style>
+  <style>
+    .viewer-dialog{width:min(1000px,calc(100vw - 24px));max-width:none;max-height:calc(100vh - 24px);padding:0;border:1px solid #34506b;border-radius:20px;background:#0a1322;color:var(--text);box-shadow:0 24px 90px #000b}
+    .viewer-dialog::backdrop{background:#02050bcc;backdrop-filter:blur(7px)}
+    .viewer-shell{padding:clamp(16px,3vw,26px)}
+    .viewer-header,.viewer-controls,.viewer-progress-label{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .viewer-header{margin-bottom:16px}.viewer-header h2{margin:0;font:700 clamp(18px,3vw,25px) 'Space Grotesk',sans-serif}
+    .viewer-close,.viewer-nav{border:1px solid #34506b;border-radius:10px;padding:10px 13px;background:#101c2d;color:var(--text);font:700 13px 'DM Sans',sans-serif;cursor:pointer}
+    .viewer-close:hover,.viewer-nav:hover:not(:disabled){border-color:var(--cyan)}.viewer-nav:disabled{opacity:.45;cursor:not-allowed}
+    .viewer-loading{margin:12px 0;color:var(--muted);font-size:13px}.viewer-track{height:8px;overflow:hidden;border-radius:99px;background:#202c40}
+    .viewer-track>div{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .25s ease}
+    .viewer-stage{display:grid;place-items:center;min-height:180px;margin-top:16px;overflow:hidden;border:1px solid #23314a;border-radius:14px;background:#05080e}
+    .viewer-stage img{display:block;width:100%;max-height:65vh;object-fit:contain;opacity:0}.viewer-stage img[hidden]{display:none}
+    .viewer-stage img.ready{animation:viewer-slide-in .28s ease forwards}
+    @keyframes viewer-slide-in{from{opacity:0;transform:translateX(18px) scale(.99)}to{opacity:1;transform:translateX(0) scale(1)}}
+    .viewer-error{color:#ffdce2;font-size:13px;line-height:1.6}.viewer-controls{margin-top:14px}.viewer-count{color:var(--muted);font-size:13px;font-weight:700}
+    @media(prefers-reduced-motion:reduce){.viewer-stage img.ready{animation:none;opacity:1}.viewer-track>div{transition:none}}
+  </style>
+</head>
+<body>
+<main class="container">
+  <header class="hero">
+    <div class="brand"><span class="brand-icon">📚</span> SLIDEVAULT</div>
+    <h1>Your My SQL slides.<br><span class="gradient">Download every module.</span></h1>
+    <p class="subtitle">Choose a module to view its slides online or create a PDF. Download all modules as separate PDFs or together in one ZIP file.</p>
+    <div class="stats"><div class="stat"><strong id="moduleCount">8</strong> modules</div><div class="stat"><strong id="slideCount">182</strong> total slides</div><div class="stat"><strong>PDF</strong> individual downloads</div></div>
+  </header>
+
+  <section class="panel" id="modules">
+    <h2 class="section-heading"><span class="section-number">01</span> Available My SQL modules</h2>
+    <p class="description">View the complete slide deck online or download modules as PDFs. Modules sync live from the admin dashboard, so changes appear without editing this page.</p>
+    <div class="actions" style="margin-bottom:18px">
+      <button class="btn btn-primary" id="downloadSeparateModules" type="button">↓ &nbsp; Download all modules separately</button>
+      <button class="btn btn-primary" id="downloadAllModules" type="button">↓ &nbsp; Download all modules (.zip)</button>
+    </div>
+    <div class="module-grid" id="moduleGrid"></div>
+    <div class="progress-wrap" id="progressWrap" aria-live="polite">
+      <div class="progress-label"><span id="progressLabel">Preparing PDF…</span><strong id="progressPercent">0%</strong></div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="status" id="progressStatus">Waiting to start.</div>
+    </div>
+    <div class="message" id="message" role="status"></div>
+    <div class="note"><strong>Important:</strong> Separate downloads save one PDF per module; your browser may ask you to allow multiple downloads. The viewer and PDF creation require the course server to permit browser access (CORS). Slide images must follow the same URL pattern as <code>slide-1.png</code>.</div>
+  </section>
+  <footer>SlideVault · My SQL module PDF builder<br>Use only course materials you are authorized to access.</footer>
+</main>
+<dialog class="viewer-dialog" id="slideViewer" aria-labelledby="viewerTitle">
+  <div class="viewer-shell">
+    <div class="viewer-header"><h2 id="viewerTitle">Online slide viewer</h2><button class="viewer-close" id="viewerClose" type="button" aria-label="Close slide viewer">Close ×</button></div>
+    <div id="viewerLoading" aria-live="polite">
+      <div class="viewer-progress-label"><span id="viewerLoadingLabel">Loading slides…</span><strong id="viewerLoadingPercent">0%</strong></div>
+      <div class="viewer-track" role="progressbar" aria-label="Loading slides" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="viewerLoadingBar"></div></div>
+    </div>
+    <p class="viewer-error" id="viewerError" role="status" hidden></p>
+    <div class="viewer-stage"><img id="viewerImage" alt="" hidden></div>
+    <div class="viewer-controls">
+      <button class="viewer-nav" id="viewerPrevious" type="button">← Previous</button>
+      <span class="viewer-count" id="viewerCount" aria-live="polite"></span>
+      <button class="viewer-nav" id="viewerNext" type="button">Next →</button>
+    </div>
+    <div class="viewer-track" style="margin-top:12px" role="progressbar" aria-label="Slide position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="viewerSlideBar"></div></div>
+  </div>
+</dialog>
+<button type="button" class="mobile-builder-btn" onclick="document.getElementById('modules').scrollIntoView({behavior:'smooth',block:'start'})">↓ &nbsp; View My SQL Modules</button>
+<script>
+  // Public module list. Admin changes are stored in Firestore, so this page need not be edited for each new module.
+  const defaultModules = [
+    {number:1,title:'My SQL — Module 1',slides:28,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/21/slides/1792987624_5a7ad406/slide-1.png',file:'MySQL-Module-1.pdf',icon:'🗄️'},
+    {number:2,title:'My SQL — Module 2',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/22/slides/1792999236_1ab33a31/slide-1.png',file:'MySQL-Module-2.pdf',icon:'📘'},
+    {number:3,title:'My SQL — Module 3',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/23/slides/1793252991_808478b0/slide-1.png',file:'MySQL-Module-3.pdf',icon:'⚙️'},
+    {number:4,title:'My SQL — Module 4',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/24/slides/1793253052_c0be39af/slide-1.png',file:'MySQL-Module-4.pdf',icon:'🚀'},
+    {number:5,title:'My SQL — Module 5',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/25/slides/1793332419_c3af79a6/slide-1.png',file:'MySQL-Module-5.pdf',icon:'🧩'},
+    {number:6,title:'My SQL — Module 6',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/26/slides/1793332485_2cbcc06e/slide-1.png',file:'MySQL-Module-6.pdf',icon:'📚'},
+    {number:7,title:'My SQL — Module 7',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/27/slides/1793707196_b610555e/slide-1.png',file:'MySQL-Module-7.pdf',icon:'📘'},
+    {number:8,title:'My SQL — Module 8',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/43/slides/1793797056_dc0e1316/slide-1.png',file:'MySQL-Module-8.pdf',icon:'📘'}
+  ];
+  let modules = [...defaultModules];
+  const moduleGrid = document.getElementById('moduleGrid');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressPercent = document.getElementById('progressPercent');
+  const progressBar = document.getElementById('progressBar');
+  const progressStatus = document.getElementById('progressStatus');
+  const message = document.getElementById('message');
+  const slideViewer = document.getElementById('slideViewer');
+  const viewerImage = document.getElementById('viewerImage');
+  const viewerSlides = [];
+  let viewerSlideIndex = 0;
+  let viewerModule = null;
+  let viewerLoadId = 0;
+
+  function renderModules() {
+    moduleGrid.innerHTML = modules.slice().sort((a,b)=>a.number-b.number).map(m => `
+      <article class="module-card">
+        <div class="module-top"><span class="module-tag">MODULE ${String(m.number).padStart(2,'0')}</span><span class="module-icon">${m.icon || '📘'}</span></div>
+        <h3>${escapeHtml(m.title)}</h3>
+        <p>View all ${Number(m.slides)} slides online or download them together as a PDF for offline revision.</p>
+        <div class="module-meta"><span>Available slides</span><strong>${Number(m.slides)} slides</strong></div>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" data-download="${Number(m.number)}">↓ &nbsp; Download Module PDF</button>
+          <button class="btn btn-secondary" type="button" data-view="${Number(m.number)}">▶ &nbsp; View slides online</button>
+        </div>
+      </article>`).join('');
+    document.getElementById('moduleCount').textContent = modules.length;
+    document.getElementById('slideCount').textContent = modules.reduce((sum,m)=>sum+Number(m.slides||0),0);
+  }
+  function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  renderModules();
+  // If Firebase is unavailable, the built-in modules still work.
+  const firebaseConfig = { apiKey: "AIzaSyB6wHq8ULlPzpsV1Mt6-Uvq9VR7MJEtf78", authDomain: "slides10x.firebaseapp.com", projectId: "slides10x", storageBucket: "slides10x.firebasestorage.app", messagingSenderId: "759065894714", appId: "1:759065894714:web:5a603194d2e04d4c223a03", measurementId: "G-XZBXM7DDTP" };
+  async function loadAdminManagedModules() {
+    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('YOUR_')) return;
+    try {
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
+      const { getFirestore, collection, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      onSnapshot(collection(db,'modules'), snap => {
+        const saved = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+          const timeDifference=(Date.parse(a.updatedAt||'')||0)-(Date.parse(b.updatedAt||'')||0);
+          if(timeDifference)return timeDifference;
+          const canonicalDifference=Number(a.id===String(a.number))-Number(b.id===String(b.number));
+          return canonicalDifference||a.id.localeCompare(b.id);
+        });
+        const byNumber = new Map(defaultModules.map(m=>[Number(m.number),m]));
+        saved.forEach(m=>{ if (m.active === false) byNumber.delete(Number(m.number)); else byNumber.set(Number(m.number), {...byNumber.get(Number(m.number)), ...m}); });
+        modules = [...byNumber.values()];
+        renderModules();
+      }, e => {
+        console.error('Could not load admin-managed modules:', e);
+        const detail=e.code==='permission-denied'?'Check that Cloud Firestore is enabled and its rules allow public reads.':e.message||'';
+        showMessage('error',`Could not sync modules from Firebase (${e.code || 'connection error'}). Showing built-in modules. ${detail}`.trim());
+      });
+    } catch (e) {
+      console.error('Could not connect to Firebase:', e);
+      const detail=e.code==='permission-denied'?'Check that Cloud Firestore is enabled and its rules allow public reads.':e.message||'';
+      showMessage('error',`Could not connect to Firebase (${e.code || 'connection error'}). Showing built-in modules. ${detail}`.trim());
+    }
+  }
+  loadAdminManagedModules();
+
+  function showMessage(type, text) {
+    message.className = `message show ${type}`;
+    message.textContent = text;
+  }
+  function setProgress(percent, label, status) {
+    const safe = Math.max(0, Math.min(100, Math.round(percent)));
+    progressWrap.classList.add('show');
+    progressBar.style.width = safe + '%';
+    progressPercent.textContent = safe + '%';
+    progressLabel.textContent = label;
+    progressStatus.textContent = status;
+  }
+  function buildSlideUrl(firstUrl, slideNumber) {
+    return firstUrl.replace(/slide-1\.png(?=([?#].*)?$)/, `slide-${slideNumber}.png`);
+  }
+  function loadViewerImage(url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('This slide could not be loaded from the course server.'));
+      image.src = url;
+    });
+  }
+  function updateViewerSlide() {
+    const slide = viewerSlides[viewerSlideIndex];
+    if (!slide) return;
+    viewerImage.classList.remove('ready');
+    viewerImage.hidden = false;
+    viewerImage.alt = `${viewerModule.title}, slide ${slide.number}`;
+    viewerImage.onload = () => viewerImage.classList.add('ready');
+    viewerImage.src = slide.image.src;
+    document.getElementById('viewerCount').textContent = `Slide ${slide.number} of ${viewerModule.slides}`;
+    document.getElementById('viewerPrevious').disabled = viewerSlideIndex === 0;
+    document.getElementById('viewerNext').disabled = viewerSlideIndex === viewerSlides.length - 1;
+    const percent = Math.round((slide.number / viewerModule.slides) * 100);
+    const track = document.getElementById('viewerSlideBar').parentElement;
+    document.getElementById('viewerSlideBar').style.width = `${percent}%`;
+    track.setAttribute('aria-valuenow', String(percent));
+  }
+  async function viewModule(moduleNumber) {
+    const selectedModule = modules.find(item => Number(item.number) === Number(moduleNumber));
+    if (!selectedModule) return;
+    viewerModule = selectedModule;
+    const loadId = ++viewerLoadId;
+    viewerSlides.length = 0;
+    viewerSlideIndex = 0;
+    document.getElementById('viewerTitle').textContent = `${viewerModule.title} · Online viewer`;
+    document.getElementById('viewerLoading').hidden = false;
+    document.getElementById('viewerError').hidden = true;
+    document.getElementById('viewerError').textContent = '';
+    document.getElementById('viewerCount').textContent = '';
+    viewerImage.hidden = true;
+    viewerImage.removeAttribute('src');
+    const loadBar = document.getElementById('viewerLoadingBar');
+    const loadTrack = loadBar.parentElement;
+    loadBar.style.width = '0%';
+    loadTrack.setAttribute('aria-valuenow', '0');
+    document.getElementById('viewerLoadingPercent').textContent = '0%';
+    document.getElementById('viewerPrevious').disabled = true;
+    document.getElementById('viewerNext').disabled = true;
+    slideViewer.showModal();
+    const images = new Array(Number(selectedModule.slides));
+    let nextSlide = 0;
+    let completed = 0;
+    const failures = [];
+    async function loadNext() {
+      while (loadId === viewerLoadId && slideViewer.open && nextSlide < images.length) {
+        const index = nextSlide++;
+        const slideNumber = index + 1;
+        try {
+          images[index] = await loadViewerImage(buildSlideUrl(selectedModule.url, slideNumber));
+        } catch (error) {
+          failures.push(slideNumber);
+        }
+        if (loadId !== viewerLoadId || !slideViewer.open) return;
+        completed++;
+        const percent = Math.round((completed / images.length) * 100);
+        loadBar.style.width = `${percent}%`;
+        loadTrack.setAttribute('aria-valuenow', String(percent));
+        document.getElementById('viewerLoadingPercent').textContent = `${percent}%`;
+        document.getElementById('viewerLoadingLabel').textContent = `Loading slides · ${completed} of ${images.length}`;
+      }
+    }
+    await Promise.all(Array.from({length:Math.min(4,images.length)}, () => loadNext()));
+    if (loadId !== viewerLoadId || !slideViewer.open) return;
+    images.forEach((image,index) => { if (image) viewerSlides.push({number:index+1,image}); });
+    document.getElementById('viewerLoading').hidden = true;
+    if (failures.length) {
+      const error = document.getElementById('viewerError');
+      error.textContent = `Could not load slide${failures.length === 1 ? '' : 's'} ${failures.join(', ')}. Check the slide URLs or course server availability.`;
+      error.hidden = false;
+    }
+    if (!viewerSlides.length) {
+      const error = document.getElementById('viewerError');
+      error.textContent = 'No slides could be loaded. Check the slide URL and your internet connection.';
+      error.hidden = false;
+      return;
+    }
+    updateViewerSlide();
+  }
+  document.getElementById('viewerClose').addEventListener('click', () => slideViewer.close());
+  slideViewer.addEventListener('close', () => { viewerLoadId++; });
+  document.getElementById('viewerPrevious').addEventListener('click', () => { if (viewerSlideIndex > 0) { viewerSlideIndex--; updateViewerSlide(); } });
+  document.getElementById('viewerNext').addEventListener('click', () => { if (viewerSlideIndex < viewerSlides.length - 1) { viewerSlideIndex++; updateViewerSlide(); } });
+  slideViewer.addEventListener('click', event => { if (event.target === slideViewer) slideViewer.close(); });
+  document.addEventListener('keydown', event => {
+    if (!slideViewer.open) return;
+    if (event.key === 'ArrowLeft' && viewerSlideIndex > 0) { viewerSlideIndex--; updateViewerSlide(); }
+    if (event.key === 'ArrowRight' && viewerSlideIndex < viewerSlides.length - 1) { viewerSlideIndex++; updateViewerSlide(); }
+  });
+  function fetchSlideImage(url, slideNumber) {
+    return fetch(url, {mode:'cors', cache:'no-store'}).then(response => {
+      if (!response.ok) throw new Error(`Slide ${slideNumber} could not be loaded (HTTP ${response.status}).`);
+      const type = response.headers.get('content-type') || '';
+      if (!type.includes('image')) throw new Error(`Slide ${slideNumber} did not return an image. The URL pattern may be different.`);
+      return response.blob();
+    }).catch(error => {
+      if (error instanceof TypeError) throw new Error(`Could not access slide ${slideNumber}. The server may block browser access (CORS), or the slide URL may be unavailable.`);
+      throw error;
+    });
+  }
+  function blobToJpeg(blob) {
+    return new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { URL.revokeObjectURL(objectUrl); reject(new Error('Could not process an image in this browser.')); return; }
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        const data = canvas.toDataURL('image/jpeg',0.94);
+        URL.revokeObjectURL(objectUrl);
+        resolve({data, width:canvas.width, height:canvas.height});
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('A slide image could not be decoded.')); };
+      img.src = objectUrl;
+    });
+  }
+  // Slides are widescreen. Use a 16:9 PDF page and draw the slide edge-to-edge,
+  // instead of placing it inside A4 (which creates distracting white bands).
+  const PDF_PAGE_W = 297;
+  const PDF_PAGE_H = PDF_PAGE_W * 9 / 16;
+  function addImageToPdf(pdf, image, firstPage) {
+    if (!firstPage) pdf.addPage([PDF_PAGE_W, PDF_PAGE_H], 'landscape');
+    // Fill the whole page: no margins and no white bars around the slide.
+    pdf.addImage(image.data, 'JPEG', 0, 0, PDF_PAGE_W, PDF_PAGE_H, undefined, 'FAST');
+  }
+  async function createModulePdf(m, onProgress) {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('The PDF library could not load. Check your internet connection and refresh this page.');
+    }
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'landscape', unit:'mm', format:[PDF_PAGE_W, PDF_PAGE_H], compress:true});
+    pdf.setProperties({title:m.title, subject:`Module ${m.number} lesson slides`, creator:'SlideVault'});
+    const slideCount = Number(m.slides);
+    const fetchConcurrency = Math.min(6, slideCount);
+    const pendingSlides = new Map();
+    let nextSlideToFetch = 1;
+    function queueSlideFetch() {
+      if (nextSlideToFetch > slideCount) return;
+      const slideNumber = nextSlideToFetch++;
+      pendingSlides.set(slideNumber, fetchSlideImage(buildSlideUrl(m.url, slideNumber), slideNumber)
+        .then(blob => ({blob}), error => ({error})));
+    }
+    for (let worker = 0; worker < fetchConcurrency; worker++) queueSlideFetch();
+    for (let slide = 1; slide <= m.slides; slide++) {
+      onProgress?.(slide, 'loading');
+      const result = await pendingSlides.get(slide);
+      pendingSlides.delete(slide);
+      if (result.error) throw result.error;
+      queueSlideFetch();
+      onProgress?.(slide, 'processing');
+      const image = await blobToJpeg(result.blob);
+      addImageToPdf(pdf, image, slide === 1);
+      onProgress?.(slide, 'complete');
+    }
+    return pdf;
+  }
+  function setDownloadButtonsDisabled(disabled) {
+    document.querySelectorAll('[data-download], #downloadAllModules, #downloadSeparateModules').forEach(button => { button.disabled = disabled; });
+  }
+  async function downloadModule(moduleNumber, button) {
+    const m = modules.find(item => Number(item.number) === Number(moduleNumber));
+    if (!m) return;
+    setDownloadButtonsDisabled(true);
+    message.className = 'message'; message.textContent = '';
+    const originalText = button.innerHTML;
+    button.textContent = 'Preparing PDF…';
+    try {
+      const pdf = await createModulePdf(m, (slide, stage) => {
+        const label = stage === 'loading' ? `Fetching slide ${slide} of ${m.slides}…`
+          : stage === 'processing' ? `Converting slide ${slide} of ${m.slides}…`
+          : `Slide ${slide} of ${m.slides} processed.`;
+        setProgress(((slide - (stage === 'loading' ? 1 : stage === 'processing' ? .5 : 0)) / m.slides) * 100, `${stage === 'complete' ? 'Creating' : stage === 'loading' ? 'Loading' : 'Processing'} ${m.title}`, label);
+      });
+      setProgress(100,'Download ready',`Saving ${m.file}…`);
+      pdf.save(m.file);
+      showMessage('success',`${m.title}: PDF created with ${m.slides} slides. Check your browser Downloads folder.`);
+      setProgress(100,'Completed successfully',`${m.slides} slides processed for ${m.title}.`);
+    } catch (error) {
+      console.error('SlideVault PDF error:', error);
+      showMessage('error',`${error.message || 'Something went wrong while generating the PDF.'} Check that each slide URL exists and that the source allows browser access.`);
+      progressLabel.textContent = 'Could not complete';
+    } finally {
+      setDownloadButtonsDisabled(false);
+      button.innerHTML = originalText;
+    }
+  }
+  async function downloadAllModules(button) {
+    if (!window.JSZip) {
+      showMessage('error','The ZIP library could not load. Check your internet connection and refresh this page.');
+      return;
+    }
+    if (!modules.length) {
+      showMessage('error','There are no modules available to download.');
+      return;
+    }
+    setDownloadButtonsDisabled(true);
+    message.className = 'message'; message.textContent = '';
+    const originalText = button.innerHTML;
+    button.textContent = 'Preparing ZIP…';
+    try {
+      const zip = new window.JSZip();
+      const orderedModules = modules.slice().sort((a,b) => Number(a.number) - Number(b.number));
+      const totalSlides = orderedModules.reduce((sum, module) => sum + Number(module.slides), 0);
+      if (!Number.isFinite(totalSlides) || totalSlides <= 0) throw new Error('The module list has no valid slides to download.');
+      let completedSlides = 0;
+      for (const module of orderedModules) {
+        const moduleSlides = Number(module.slides);
+        if (!Number.isInteger(moduleSlides) || moduleSlides <= 0) throw new Error(`${module.title} has an invalid slide count.`);
+        setProgress((completedSlides / totalSlides) * 95, `Creating ${module.title}`, `Preparing module ${module.number} of ${orderedModules.length}…`);
+        const pdf = await createModulePdf(module, (slide, stage) => {
+          const currentSlideProgress = stage === 'complete' ? 1 : stage === 'processing' ? .5 : 0;
+          const overall = (completedSlides + slide - 1 + currentSlideProgress) / totalSlides;
+          setProgress(overall * 95, `Creating ${module.title}`, `${module.title}: ${stage === 'loading' ? 'Fetching' : stage === 'processing' ? 'Converting' : 'Processed'} slide ${slide} of ${moduleSlides}.`);
+        });
+        const fileName = String(module.file || `Module-${module.number}.pdf`).replace(/[\\/:*?"<>|]/g, '-');
+        const uniqueFileName = zip.file(fileName) ? `Module-${module.number}-${fileName}` : fileName;
+        zip.file(uniqueFileName, pdf.output('blob'), {compression:'STORE'});
+        completedSlides += moduleSlides;
+      }
+      setProgress(96, 'Compressing ZIP', 'Packaging all module PDFs…');
+      const zipBlob = await zip.generateAsync({type:'blob', compression:'STORE'}, metadata => {
+        setProgress(96 + metadata.percent * .04, 'Compressing ZIP', `Packaging all module PDFs… ${Math.round(metadata.percent)}%`);
+      });
+      const downloadUrl = URL.createObjectURL(zipBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = downloadUrl;
+      downloadLink.download = 'SlideVault-All-Modules.zip';
+      downloadLink.click();
+      setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+      showMessage('success',`ZIP created with ${orderedModules.length} module PDFs and ${totalSlides} slides. Check your browser Downloads folder.`);
+      setProgress(100, 'Completed successfully', `${orderedModules.length} modules packaged into SlideVault-All-Modules.zip.`);
+    } catch (error) {
+      console.error('SlideVault ZIP error:', error);
+      showMessage('error',`${error.message || 'Something went wrong while creating the ZIP.'} Check that slide URLs exist and that the source allows browser access.`);
+      progressLabel.textContent = 'Could not complete';
+    } finally {
+      setDownloadButtonsDisabled(false);
+      button.innerHTML = originalText;
+    }
+  }
+  async function downloadModulesSeparately(button) {
+    if (!modules.length) {
+      showMessage('error','There are no modules available to download.');
+      return;
+    }
+    const orderedModules = modules.slice().sort((a,b) => Number(a.number) - Number(b.number));
+    const totalSlides = orderedModules.reduce((sum, module) => sum + Number(module.slides), 0);
+    if (!Number.isFinite(totalSlides) || totalSlides <= 0 || orderedModules.some(module => !Number.isInteger(Number(module.slides)) || Number(module.slides) <= 0)) {
+      showMessage('error','The module list contains invalid slide counts, so the downloads cannot be started.');
+      return;
+    }
+    setDownloadButtonsDisabled(true);
+    message.className = 'message'; message.textContent = '';
+    const originalText = button.innerHTML;
+    button.textContent = 'Preparing separate PDFs…';
+    let completedSlides = 0;
+    let completedModules = 0;
+    const usedFileNames = new Set();
+    try {
+      for (let index = 0; index < orderedModules.length; index++) {
+        const module = orderedModules[index];
+        button.textContent = `Preparing module ${index + 1} of ${orderedModules.length}…`;
+        const pdf = await createModulePdf(module, (slide, stage) => {
+          const currentSlideProgress = stage === 'complete' ? 1 : stage === 'processing' ? .5 : 0;
+          const overall = (completedSlides + slide - 1 + currentSlideProgress) / totalSlides;
+          setProgress(overall * 100, `Creating ${module.title}`, `${module.title}: ${stage === 'loading' ? 'Fetching' : stage === 'processing' ? 'Converting' : 'Processed'} slide ${slide} of ${module.slides}.`);
+        });
+        let fileName = String(module.file || `Module-${module.number}.pdf`).replace(/[\\/:*?"<>|]/g, '-');
+        if (usedFileNames.has(fileName.toLowerCase())) fileName = `Module-${module.number}-${fileName}`;
+        usedFileNames.add(fileName.toLowerCase());
+        setProgress(((completedSlides + Number(module.slides)) / totalSlides) * 100, 'Saving separate PDFs', `Saving ${fileName}…`);
+        pdf.save(fileName);
+        completedSlides += Number(module.slides);
+        completedModules++;
+      }
+      showMessage('success',`${completedModules} separate module PDFs are ready. Check your browser Downloads folder.`);
+      setProgress(100, 'Completed successfully', `${completedModules} module PDFs downloaded separately.`);
+    } catch (error) {
+      console.error('SlideVault separate download error:', error);
+      showMessage('error',`${error.message || 'Something went wrong while downloading the modules.'} ${completedModules ? `${completedModules} module PDFs were already started.` : ''} Check the slide URLs and allow multiple downloads in your browser.`);
+      progressLabel.textContent = 'Could not complete';
+    } finally {
+      setDownloadButtonsDisabled(false);
+      button.innerHTML = originalText;
+    }
+  }
+  document.getElementById('downloadSeparateModules').addEventListener('click', event => downloadModulesSeparately(event.currentTarget));
+  document.getElementById('downloadAllModules').addEventListener('click', event => downloadAllModules(event.currentTarget));
+  moduleGrid.addEventListener('click', event => {
+    const button = event.target.closest('[data-download]');
+    if (button) downloadModule(Number(button.dataset.download), button);
+    const viewButton = event.target.closest('[data-view]');
+    if (viewButton) viewModule(Number(viewButton.dataset.view));
+  });
+</script>
+</body>
+</html>

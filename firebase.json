@@ -1,0 +1,9 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "firestore.rules", "README-ADMIN.txt"],
+    "cleanUrls": true,
+    "rewrites": [{"source": "/admin", "destination": "/admin.html"}]
+  },
+  "firestore": {"rules": "firestore.rules"}
+}

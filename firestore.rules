@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'jashusai1210@gmail.com';
+    }
+    match /modules/{moduleId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
