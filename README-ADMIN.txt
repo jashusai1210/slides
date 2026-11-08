@@ -18,7 +18,7 @@ ONE-TIME SETUP
 7. Public site: https://slides10x.web.app/ ; admin dashboard: https://slides10x.web.app/admin
 
 HOW MODULE MANAGEMENT WORKS
-The homepage has eight built-in modules as a fallback. Once Firebase config is entered and module documents exist in Firestore collection "modules", the homepage merges saved modules with built-ins and syncs changes live. Add/edit modules from /admin; URLs should end in slide-1.png, and later slides are expected to follow the slide-2.png, slide-3.png naming pattern.
+When Firebase is connected, documents in the Firestore collection "modules" are the public module list. Deleting a document removes that module from the website; hiding a built-in module in /admin marks it hidden. An empty collection shows no modules. The eight built-in modules are used only if Firebase is not configured or cannot be reached. Add/edit modules from /admin; URLs should end in slide-1.png, and later slides are expected to follow the slide-2.png, slide-3.png naming pattern.
 
 ADMIN ROUTE NOTE
 Firebase Hosting's default domain uses /admin as a path. admin.web.app is a separate domain and is not automatically created by adding an admin route. The admin page is not linked from the public homepage, but authentication and Firestore rules provide the security.

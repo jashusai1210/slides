@@ -92,7 +92,8 @@
     {number:7,title:'My SQL — Module 7',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/27/slides/1793707196_b610555e/slide-1.png',file:'MySQL-Module-7.pdf',icon:'📘'},
     {number:8,title:'My SQL — Module 8',slides:22,url:'https://academy-zap10x.s3.ap-south-1.amazonaws.com/courses/3/modules/43/slides/1793797056_dc0e1316/slide-1.png',file:'MySQL-Module-8.pdf',icon:'📘'}
   ];
-  let modules = [...defaultModules];
+  let modules = [];
+  let moduleListState = 'loading';
   const moduleGrid = document.getElementById('moduleGrid');
   const progressWrap = document.getElementById('progressWrap');
   const progressLabel = document.getElementById('progressLabel');
@@ -108,7 +109,7 @@
   let viewerLoadId = 0;
 
   function renderModules() {
-    moduleGrid.innerHTML = modules.slice().sort((a,b)=>a.number-b.number).map(m => `
+    const moduleCards = modules.slice().sort((a,b)=>a.number-b.number).map(m => `
       <article class="module-card">
         <div class="module-top"><span class="module-tag">MODULE ${String(m.number).padStart(2,'0')}</span><span class="module-icon">${m.icon || '📘'}</span></div>
         <h3>${escapeHtml(m.title)}</h3>
@@ -119,15 +120,21 @@
           <button class="btn btn-secondary" type="button" data-view="${Number(m.number)}">▶ &nbsp; View slides online</button>
         </div>
       </article>`).join('');
+    moduleGrid.innerHTML = moduleCards || `<p class="description">${moduleListState === 'loading' ? 'Loading modules…' : 'No modules are currently published.'}</p>`;
     document.getElementById('moduleCount').textContent = modules.length;
     document.getElementById('slideCount').textContent = modules.reduce((sum,m)=>sum+Number(m.slides||0),0);
   }
   function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   renderModules();
-  // If Firebase is unavailable, the built-in modules still work.
+  // Built-in modules are used only when Firebase cannot be used.
   const firebaseConfig = { apiKey: "AIzaSyB6wHq8ULlPzpsV1Mt6-Uvq9VR7MJEtf78", authDomain: "slides10x.firebaseapp.com", projectId: "slides10x", storageBucket: "slides10x.firebasestorage.app", messagingSenderId: "759065894714", appId: "1:759065894714:web:5a603194d2e04d4c223a03", measurementId: "G-XZBXM7DDTP" };
   async function loadAdminManagedModules() {
-    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('YOUR_')) return;
+    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('YOUR_')) {
+      modules = [...defaultModules];
+      moduleListState = 'fallback';
+      renderModules();
+      return;
+    }
     try {
       const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
       const { getFirestore, collection, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
@@ -140,17 +147,24 @@
           const canonicalDifference=Number(a.id===String(a.number))-Number(b.id===String(b.number));
           return canonicalDifference||a.id.localeCompare(b.id);
         });
-        const byNumber = new Map(defaultModules.map(m=>[Number(m.number),m]));
+        const byNumber = new Map();
         saved.forEach(m=>{ if (m.active === false) byNumber.delete(Number(m.number)); else byNumber.set(Number(m.number), {...byNumber.get(Number(m.number)), ...m}); });
         modules = [...byNumber.values()];
+        moduleListState = 'loaded';
         renderModules();
       }, e => {
         console.error('Could not load admin-managed modules:', e);
+        modules = [...defaultModules];
+        moduleListState = 'fallback';
+        renderModules();
         const detail=e.code==='permission-denied'?'Check that Cloud Firestore is enabled and its rules allow public reads.':e.message||'';
         showMessage('error',`Could not sync modules from Firebase (${e.code || 'connection error'}). Showing built-in modules. ${detail}`.trim());
       });
     } catch (e) {
       console.error('Could not connect to Firebase:', e);
+      modules = [...defaultModules];
+      moduleListState = 'fallback';
+      renderModules();
       const detail=e.code==='permission-denied'?'Check that Cloud Firestore is enabled and its rules allow public reads.':e.message||'';
       showMessage('error',`Could not connect to Firebase (${e.code || 'connection error'}). Showing built-in modules. ${detail}`.trim());
     }
